@@ -7,9 +7,9 @@ gives a error somethimes
 pip install discord openai
 ```
 
-Replace variables in the bot.py file
-* BOT_TOKEN
-* OPENAI_TOKEN
+Copy `.env.example` to `.env` and replace variables in the file
+* BOT_TOKEN=
+* OPENAI_TOKEN=
 
 ```bash
 python ./bot.py
@@ -17,9 +17,9 @@ python ./bot.py
 
 ## Running in Docker
 
-Replace variables in the bot.py file
-* BOT_TOKEN
-* OPENAI_TOKEN
+Copy `.env.example` to `.env` and replace variables in the file
+* BOT_TOKEN=
+* OPENAI_TOKEN=
 
 ```bash
 docker build --tag dylanve151/discordbot-chatgpt .

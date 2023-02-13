@@ -1,11 +1,16 @@
-from discord.ext import commands
+import os
+
 import discord
 import openai
+from discord.ext import commands
+from dotenv import load_dotenv
 
-BOT_TOKEN = ""
+load_dotenv()
+
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 
-OPENAI_TOKEN = ""
+OPENAI_TOKEN = os.getenv('OPENAI_TOKEN')
 openai.api_key = OPENAI_TOKEN
 
 @bot.event
