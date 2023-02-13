@@ -14,7 +14,7 @@ async def on_ready():
 
 @bot.command()
 async def chatgpt(ctx, *, args):
-    print("A:\"", args, "\"")
+    print("Q:\"", args, "\"")
     response = openai.Completion.create(
         model="text-davinci-003", 
         max_tokens=800,
@@ -24,7 +24,8 @@ async def chatgpt(ctx, *, args):
         best_of=1,
         prompt=args
     )
-    await ctx.send(response.choices[0].text)
-    print("Q:\"", response.choices[0].text, "\"")
+    embed = discord.Embed(title=args, description=response["choices"][0]["text"])
+    await ctx.reply(embed=embed)
+    print("A:\"", response.choices[0].text, "\"")
 
 bot.run(BOT_TOKEN)
