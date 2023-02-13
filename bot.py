@@ -16,13 +16,13 @@ async def on_ready():
 async def chatgpt(ctx, *, args):
     print("A:\"", args, "\"")
     response = openai.Completion.create(
-	    model="text-davinci-003", 
-		max_tokens=800,
-		temperature=0.5,
+        model="text-davinci-003", 
+        max_tokens=800,
+        temperature=0.5,
         presence_penalty=0,
         frequency_penalty=0,
-		best_of=1,
-		prompt=args
+        best_of=1,
+        prompt=args
     )
     await ctx.send(response.choices[0].text)
     print("Q:\"", response.choices[0].text, "\"")
