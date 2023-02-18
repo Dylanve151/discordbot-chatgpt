@@ -1,5 +1,5 @@
 import os
-import asyncio
+import threading
 
 import discord
 import openai
@@ -35,7 +35,7 @@ async def on_ready():
 
 @bot.command()
 async def chatgpt(ctx, *, args):
-	cmd = respsoneandsent(ctx, args)
-	task = asyncio.create_task(cmd)
+	thread = threading.Thread(target=await respsoneandsent(ctx, args))
+	thread.start()
 
 bot.run(BOT_TOKEN)
