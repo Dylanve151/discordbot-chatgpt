@@ -1,5 +1,5 @@
 # discordbot-chatgpt
-gives a error somethimes
+gives a error when openai is loading response.
 
 ## Running locally
 
