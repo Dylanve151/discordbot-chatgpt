@@ -8,19 +8,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-client = OpenAI()
-
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 
 OPENAI_TOKEN = os.getenv('OPENAI_TOKEN')
-client.api_key = OPENAI_TOKEN
+OpenAI.api_key = OPENAI_TOKEN
 
 OPENAI_MODEL = os.getenv('OPENAI_MODEL')
 
 async def respsoneandsent(chatmsg, question):
 	print("Q:\"", question, "\"")
-	response = client.Completion.create(
+	response = OpenAI.Completion.create(
 		model=OPENAI_MODEL, 
 		max_tokens=800,
 		temperature=0.5,
