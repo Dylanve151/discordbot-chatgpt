@@ -2,24 +2,25 @@ import os
 import threading
 
 import discord
-import openai
+from openai import OpenAI
 from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
 
+client = OpenAI()
+
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 
 OPENAI_TOKEN = os.getenv('OPENAI_TOKEN')
-openai.api_key = OPENAI_TOKEN
+client.api_key = OPENAI_TOKEN
 
 OPENAI_MODEL = os.getenv('OPENAI_MODEL')
 
-
 async def respsoneandsent(chatmsg, question):
 	print("Q:\"", question, "\"")
-	response = openai.Completion.create(
+	response = client.Completion.create(
 		model=OPENAI_MODEL, 
 		max_tokens=800,
 		temperature=0.5,
