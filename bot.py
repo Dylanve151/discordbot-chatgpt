@@ -9,7 +9,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
+
+intents = discord.Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix='>', intents=intents)
 
 OPENAI_TOKEN = os.getenv('OPENAI_TOKEN')
 OpenAI.api_key = OPENAI_TOKEN
@@ -36,7 +39,7 @@ async def on_ready():
 	print(f'We have logged in as {bot.user}')
 
 @bot.command()
-async def chatgpt(ctx, *, args):
+async def chatgpt(ctx, args):
 	thread = threading.Thread(target=await respsoneandsent(ctx, args))
 	thread.start()
 
