@@ -14,10 +14,13 @@ bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 OPENAI_TOKEN = os.getenv('OPENAI_TOKEN')
 openai.api_key = OPENAI_TOKEN
 
+OPENAI_MODEL = os.getenv('OPENAI_MODEL')
+
+
 async def respsoneandsent(chatmsg, question):
 	print("Q:\"", question, "\"")
 	response = openai.Completion.create(
-		model="text-davinci-003", 
+		model=OPENAI_MODEL, 
 		max_tokens=800,
 		temperature=0.5,
 		presence_penalty=0,
