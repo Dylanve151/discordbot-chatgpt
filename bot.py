@@ -12,7 +12,7 @@ BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix='>', intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents)
 
 OPENAI_TOKEN = os.getenv('OPENAI_TOKEN')
 OpenAI.api_key = OPENAI_TOKEN
@@ -39,8 +39,13 @@ async def on_ready():
 	print(f'We have logged in as {bot.user}')
 
 @bot.command()
-async def chatgpt(ctx, args):
+async def chatgpt(ctx, *, args):
 	thread = threading.Thread(target=await respsoneandsent(ctx, args))
 	thread.start()
+
+@bot.command()
+async def chatgpt_test(ctx, *, args):
+        embed = discord.Embed(title='test', description='ook test')
+        await ctx.reply(embed=embed)
 
 bot.run(BOT_TOKEN)
