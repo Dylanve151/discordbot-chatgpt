@@ -32,7 +32,7 @@ async def respsoneandsent(chatmsg, question):
 		best_of=1,
 		prompt=question
 	)
-	embed = discord.Embed(title=question, description=response["choices"][0]["text"])
+	embed = discord.Embed(title=question, description=response.choices[0].text)
 	await chatmsg.reply(embed=embed)
 	print("A:\"", response.choices[0].text, "\"")
 
