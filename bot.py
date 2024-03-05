@@ -15,13 +15,15 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 OPENAI_TOKEN = os.getenv('OPENAI_TOKEN')
-OpenAI.api_key = OPENAI_TOKEN
+os.environ['OPENAI_API_KEY'] = OPENAI_TOKEN
 
 OPENAI_MODEL = os.getenv('OPENAI_MODEL')
 
+client = OpenAI()
+
 async def respsoneandsent(chatmsg, question):
 	print("Q:\"", question, "\"")
-	response = OpenAI.chat.completions.create(
+	response = client.completions.create(
 		model=OPENAI_MODEL, 
 		max_tokens=800,
 		temperature=0.5,
@@ -43,7 +45,6 @@ async def chatgpt(ctx, *, args):
 	thread = threading.Thread(target=await respsoneandsent(ctx, args))
 	thread.start()
 
-@bot.command()
 async def chatgpt_test(ctx, *, args):
         embed = discord.Embed(title='test', description='ook test')
         await ctx.reply(embed=embed)
