@@ -21,7 +21,7 @@ OPENAI_MODEL = os.getenv('OPENAI_MODEL')
 
 async def respsoneandsent(chatmsg, question):
 	print("Q:\"", question, "\"")
-	response = OpenAI.Completion.create(
+	response = OpenAI.chat.completions.create(
 		model=OPENAI_MODEL, 
 		max_tokens=800,
 		temperature=0.5,
