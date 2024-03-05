@@ -45,6 +45,7 @@ async def chatgpt(ctx, *, args):
 	thread = threading.Thread(target=await respsoneandsent(ctx, args))
 	thread.start()
 
+@bot.command()
 async def chatgpt_test(ctx, *, args):
         embed = discord.Embed(title='test', description='ook test')
         await ctx.reply(embed=embed)
