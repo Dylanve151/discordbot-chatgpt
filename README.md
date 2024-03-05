@@ -10,6 +10,7 @@ pip install discord openai
 Copy `.env.example` to `.env` and replace variables in the file
 * BOT_TOKEN=
 * OPENAI_TOKEN=
+* OPENAI_MODEL=
 
 ```bash
 python ./bot.py
@@ -20,6 +21,7 @@ python ./bot.py
 Copy `.env.example` to `.env` and replace variables in the file
 * BOT_TOKEN=
 * OPENAI_TOKEN=
+* OPENAI_MODEL=
 
 ```bash
 docker build --tag dylanve151/discordbot-chatgpt .
