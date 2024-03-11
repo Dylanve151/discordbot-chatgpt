@@ -81,7 +81,7 @@ async def chatgpt_gentts(chatmsg, question):
                 await vc.disconnect()
 
 
-async def chatgpt_gentxt(chatmsg, question):
+async def chatgpt_genimage(chatmsg, question):
         print("Q:\"", question, "\"")
         response = client.images.generate(
                 model="dall-e-2",
@@ -113,7 +113,7 @@ async def chatgpt_tts(ctx, *, args):
 
 @bot.command()
 async def chatgpt_image(ctx, *, args):
-        thread = threading.Thread(target=await chatgpt_gentts(ctx, args))
+        thread = threading.Thread(target=await chatgpt_genimage(ctx, args))
         thread.start()
 
 
