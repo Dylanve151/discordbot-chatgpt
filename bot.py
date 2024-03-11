@@ -81,6 +81,20 @@ async def chatgpt_gentts(chatmsg, question):
                 await vc.disconnect()
 
 
+async def chatgpt_gentxt(chatmsg, question):
+        print("Q:\"", question, "\"")
+        response = client.images.generate(
+                model="dall-e-2",
+                size="1024x1024",
+                quality="standard",
+                n=1,
+                prompt=question
+        )
+        embed = discord.Embed(title=question, description=response.data[0].url)
+        await chatmsg.reply(embed=embed)
+        print("A:\"", response.data[0].url, "\"")
+
+
 @bot.event
 async def on_ready():
         print(f'We have logged in as {bot.user}')
@@ -94,6 +108,11 @@ async def chatgpt(ctx, *, args):
 
 @bot.command()
 async def chatgpt_tts(ctx, *, args):
+        thread = threading.Thread(target=await chatgpt_gentts(ctx, args))
+        thread.start()
+
+@bot.command()
+async def chatgpt_image(ctx, *, args):
         thread = threading.Thread(target=await chatgpt_gentts(ctx, args))
         thread.start()
 
