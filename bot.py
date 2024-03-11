@@ -90,8 +90,7 @@ async def chatgpt_genimage(chatmsg, question):
                 n=1,
                 prompt=question
         )
-        embed = discord.Embed(title=question, description=response.data[0].url)
-        await chatmsg.reply(embed=embed)
+        await chatmsg.reply(response.data[0].url)
         print("A:\"", response.data[0].url, "\"")
 
 
