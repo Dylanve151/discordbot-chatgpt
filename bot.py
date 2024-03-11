@@ -85,7 +85,7 @@ async def chatgpt_genimage(chatmsg, question):
         print("Q:\"", question, "\"")
         response = client.images.generate(
                 model="dall-e-2",
-                size="1024x1024",
+                size="600x600",
                 quality="standard",
                 n=1,
                 prompt=question
