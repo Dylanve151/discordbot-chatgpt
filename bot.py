@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
-DISCORD_ADMIN_NAMES = os.getenv('DISCORD_ADMIN_NAMES')
+DISCORD_ADMIN_NAMES = os.getenv('DISCORD_ADMIN_NAMES').split(',')
 DISCORD_ALL_USE = os.getenv('DISCORD_ALL_USE')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 OPENAI_TXT_MODEL = os.getenv('OPENAI_TXT_MODEL')
@@ -115,8 +115,9 @@ async def chatgpt_tts(ctx, *, args):
 
 @bot.command()
 async def chatgpt_image(ctx, *, args):
-        thread = threading.Thread(target=await openai_genimage(ctx, args))
-        thread.start()
+        if DISCORD_ALL_USE or ctx.author.name in DISCORD_ADMIN_NAMES:
+                thread = threading.Thread(target=await openai_genimage(ctx, args))
+                thread.start()
 
 
 @bot.command()
