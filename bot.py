@@ -1,9 +1,6 @@
 import os
 import threading
-from pathlib import Path
 import random
-import nacl
-import ffmpeg
 import asyncio
 
 import discord
@@ -12,46 +9,48 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 
+## .env variables
 load_dotenv()
 
-BOT_TOKEN = os.getenv('BOT_TOKEN')
+DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
+DISCORD_ADMINS_ID = os.getenv('DISCORD_ADMINS_ID')
+DISCORD_ALL_USE = os.getenv('DISCORD_ALL_USE')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+OPENAI_TXT_MODEL = os.getenv('OPENAI_TXT_MODEL')
+OPENAI_TXT_TEMPERATTURE = float(os.getenv('OPENAI_TXT_TEMPERATTURE'))
+OPENAI_TTS_MODEL = os.getenv('OPENAI_TTS_MODEL')
+OPENAI_TTS_SPEED = float(os.getenv('OPENAI_TTS_SPEED'))
+OPENAI_TTS_VOICE = os.getenv('OPENAI_TTS_VOICE')
+OPENAI_IMG_MODEL = os.getenv('OPENAI_IMG_MODEL')
+OPENAI_IMG_SIZE = os.getenv('OPENAI_IMG_SIZE')
+OPENAI_IMG_QUALITY = os.getenv('OPENAI_IMG_QUALITY')
 
+
+## discord config/variables
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-OPENAI_TOKEN = os.getenv('OPENAI_TOKEN')
-os.environ['OPENAI_API_KEY'] = OPENAI_TOKEN
 
-OPENAI_MODEL = os.getenv('OPENAI_MODEL')
-
+## OpenAI config/variables
+client = OpenAI()
 OPENAI_TTS_VOICES = ["alloy","echo","fable","onyx","nova","shimmer"]
 
 
-client = OpenAI()
-
-async def chatgpt_gentxt_old(chatmsg, question):
-        print("Q:\"", question, "\"")
-        response = client.completions.create(
-                model=OPENAI_MODEL,
-                max_tokens=800,
-                temperature=0.5,
-                presence_penalty=0,
-                frequency_penalty=0,
-                best_of=1,
-                prompt=question
-        )
-        embed = discord.Embed(title=question, description=response.choices[0].text)
-        await chatmsg.reply(embed=embed)
-        print("A:\"", response.choices[0].text, "\"")
+## variables
+if False:
+        ffmpeg_exe = 'ffmpeg/bin/ffmpeg.exe'
+else:
+        ffmpeg_exe = 'ffmpeg'
 
 
-async def chatgpt_gentxt(chatmsg, question):
+## Function
+async def openai_gentxt(chatmsg, question):
         print("Q:\"", question, "\"")
         response = client.chat.completions.create(
-                model=OPENAI_MODEL,
+                model=OPENAI_TXT_MODEL,
                 max_tokens=800,
-                temperature=0.5,
+                temperature=OPENAI_TXT_TEMPERATTURE,
                 n=1,
                 messages=[{"role": "user", "content": question}]
         )
@@ -60,20 +59,22 @@ async def chatgpt_gentxt(chatmsg, question):
         print("A:\"", response.choices[0].message.content, "\"")
 
 
-async def chatgpt_gentts(chatmsg, question):
+async def openai_gentts(chatmsg, question, OPENAI_TTS_VOICE=None):
         if chatmsg.message.author.voice != None:
+                if OPENAI_TTS_VOICE == None:
+                        OPENAI_TTS_VOICE = random.choice(OPENAI_TTS_VOICES)
                 print("TTS this:\"", question, "\"")
                 response = client.audio.speech.create(
-                        model="tts-1",
-                        voice=random.choice(OPENAI_TTS_VOICES),
+                        model=OPENAI_TTS_MODEL,
+                        voice=OPENAI_TTS_VOICE,
                         response_format="mp3",
-                        speed=1.0,
+                        speed=OPENAI_TTS_SPEED,
                         input=question
                 )
-                response.stream_to_file("/tmp/tts.mp3")
+                response.stream_to_file(".temp/tts.mp3")
                 channel = chatmsg.message.author.voice.channel
                 vc = await channel.connect()
-                vc.play(discord.FFmpegPCMAudio("/tmp/tts.mp3", executable='ffmpeg'))
+                vc.play(discord.FFmpegPCMAudio(".temp/tts.mp3", executable=ffmpeg_exe))
                 while not vc.is_playing():
                         await asyncio.sleep(0.5)
                 while vc.is_playing():
@@ -81,12 +82,12 @@ async def chatgpt_gentts(chatmsg, question):
                 await vc.disconnect()
 
 
-async def chatgpt_genimage(chatmsg, question):
+async def openai_genimage(chatmsg, question):
         print("Q:\"", question, "\"")
         response = client.images.generate(
-                model="dall-e-2",
-                size="600x600",
-                quality="standard",
+                model=OPENAI_IMG_MODEL,
+                size=OPENAI_IMG_SIZE,
+                quality=OPENAI_IMG_QUALITY,
                 n=1,
                 prompt=question
         )
@@ -101,18 +102,20 @@ async def on_ready():
 
 @bot.command()
 async def chatgpt(ctx, *, args):
-        thread = threading.Thread(target=await chatgpt_gentxt(ctx, args))
+        thread = threading.Thread(target=await openai_gentxt(ctx, args))
         thread.start()
 
 
 @bot.command()
 async def chatgpt_tts(ctx, *, args):
-        thread = threading.Thread(target=await chatgpt_gentts(ctx, args))
-        thread.start()
+        if DISCORD_ALL_USE or ctx.author.name in DISCORD_ADMINS_ID:
+                thread = threading.Thread(target=await openai_gentts(ctx, args, OPENAI_TTS_VOICE))
+                thread.start()
+
 
 @bot.command()
 async def chatgpt_image(ctx, *, args):
-        thread = threading.Thread(target=await chatgpt_genimage(ctx, args))
+        thread = threading.Thread(target=await openai_genimage(ctx, args))
         thread.start()
 
 
@@ -124,5 +127,4 @@ async def chatgpt_test(ctx, *, args):
         await ctx.reply(embed=embed)
 
 
-
-bot.run(BOT_TOKEN)
+bot.run(DISCORD_BOT_TOKEN)
