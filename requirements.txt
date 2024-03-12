@@ -1,5 +1,4 @@
-discord
+discord.py
 openai
 python-dotenv
 pynacl
-ffmpeg-python
