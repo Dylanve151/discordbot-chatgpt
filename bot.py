@@ -46,7 +46,7 @@ else:
 
 ## Function
 async def openai_gentxt(chatmsg, question):
-        print("Q:\"", question, "\"")
+        print("TXT Q:\""+str(question)+"\"")
         response = client.chat.completions.create(
                 model=OPENAI_TXT_MODEL,
                 max_tokens=800,
@@ -56,14 +56,14 @@ async def openai_gentxt(chatmsg, question):
         )
         embed = discord.Embed(title=question, description=response.choices[0].message.content)
         await chatmsg.reply(embed=embed)
-        print("A:\"", response.choices[0].message.content, "\"")
+        print("TXT A:\""+str(response.choices[0].message.content)+"\"")
 
 
 async def openai_gentts(chatmsg, question, OPENAI_TTS_VOICE=None):
         if chatmsg.message.author.voice != None:
                 if OPENAI_TTS_VOICE == None:
                         OPENAI_TTS_VOICE = random.choice(OPENAI_TTS_VOICES)
-                print("TTS this:\"", question, "\"")
+                print("TTS Q:\""+str(question)+"\"")
                 response = client.audio.speech.create(
                         model=OPENAI_TTS_MODEL,
                         voice=OPENAI_TTS_VOICE,
@@ -80,10 +80,11 @@ async def openai_gentts(chatmsg, question, OPENAI_TTS_VOICE=None):
                 while vc.is_playing():
                         await asyncio.sleep(0.5)
                 await vc.disconnect()
+				print("TTS A:\""+str(question)+"\"")
 
 
 async def openai_genimage(chatmsg, question):
-        print("Q:\"", question, "\"")
+        print("IMG Q:\""+str(question)+"\"")
         response = client.images.generate(
                 model=OPENAI_IMG_MODEL,
                 size=OPENAI_IMG_SIZE,
@@ -92,7 +93,7 @@ async def openai_genimage(chatmsg, question):
                 prompt=question
         )
         await chatmsg.reply(response.data[0].url)
-        print("A:\"", response.data[0].url, "\"")
+        print("IMG A:\""+str(response.data[0].url)+"\"")
 
 
 @bot.event
