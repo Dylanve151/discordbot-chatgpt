@@ -25,6 +25,11 @@ OPENAI_IMG_MODEL = os.getenv('OPENAI_IMG_MODEL')
 OPENAI_IMG_SIZE = os.getenv('OPENAI_IMG_SIZE')
 OPENAI_IMG_QUALITY = os.getenv('OPENAI_IMG_QUALITY')
 
+if DISCORD_ALL_USE.upper() == 'TRUE':
+    DISCORD_ALL_USE = True
+else:
+    DISCORD_ALL_USE = False
+
 
 ## discord config/variables
 intents = discord.Intents.default()
@@ -38,7 +43,7 @@ OPENAI_TTS_VOICES = ["alloy","echo","fable","onyx","nova","shimmer"]
 
 
 ## variables
-if False:
+if True:
         ffmpeg_exe = 'ffmpeg/bin/ffmpeg.exe'
 else:
         ffmpeg_exe = 'ffmpeg'
@@ -46,7 +51,7 @@ else:
 
 ## Function
 async def openai_gentxt(chatmsg, question):
-        print("TXT Q:\""+str(question)+"\"")
+        print("TEXT Q:\""+str(question)+"\"")
         response = client.chat.completions.create(
                 model=OPENAI_TXT_MODEL,
                 max_tokens=800,
@@ -56,7 +61,7 @@ async def openai_gentxt(chatmsg, question):
         )
         embed = discord.Embed(title=question, description=response.choices[0].message.content)
         await chatmsg.reply(embed=embed)
-        print("TXT A:\""+str(response.choices[0].message.content)+"\"")
+        print("TEXT A:\""+str(response.choices[0].message.content)+"\"")
 
 
 async def openai_gentts(chatmsg, question, OPENAI_TTS_VOICE=None):
@@ -80,7 +85,7 @@ async def openai_gentts(chatmsg, question, OPENAI_TTS_VOICE=None):
                 while vc.is_playing():
                         await asyncio.sleep(0.5)
                 await vc.disconnect()
-				print("TTS A:\""+str(question)+"\"")
+                print("TTS A:\""+"done"+"\"")
 
 
 async def openai_genimage(chatmsg, question):
@@ -103,8 +108,11 @@ async def on_ready():
 
 @bot.command()
 async def chatgpt(ctx, *, args):
-        thread = threading.Thread(target=await openai_gentxt(ctx, args))
-        thread.start()
+        if DISCORD_ALL_USE or ctx.author.name in DISCORD_ADMIN_NAMES:
+            thread = threading.Thread(target=await openai_gentxt(ctx, args))
+            thread.start()
+        else:
+            print('nope')
 
 
 @bot.command()
@@ -112,6 +120,8 @@ async def chatgpt_tts(ctx, *, args):
         if DISCORD_ALL_USE or ctx.author.name in DISCORD_ADMIN_NAMES:
                 thread = threading.Thread(target=await openai_gentts(ctx, args, OPENAI_TTS_VOICE))
                 thread.start()
+        else:
+            print('nope')
 
 
 @bot.command()
@@ -119,14 +129,8 @@ async def chatgpt_image(ctx, *, args):
         if DISCORD_ALL_USE or ctx.author.name in DISCORD_ADMIN_NAMES:
                 thread = threading.Thread(target=await openai_genimage(ctx, args))
                 thread.start()
-
-
-@bot.command()
-async def chatgpt_test(ctx, *, args):
-        if ctx.message.author.voice != None:
-                print(ctx.message.author.voice.channel)
-        embed = discord.Embed(title='test', description='ook test')
-        await ctx.reply(embed=embed)
+        else:
+            print('nope')
 
 
 bot.run(DISCORD_BOT_TOKEN)
