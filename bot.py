@@ -26,6 +26,7 @@ OPENAI_TTS_VOICE = os.getenv('OPENAI_TTS_VOICE')
 OPENAI_IMG_MODEL = os.getenv('OPENAI_IMG_MODEL')
 OPENAI_IMG_SIZE = os.getenv('OPENAI_IMG_SIZE')
 OPENAI_IMG_QUALITY = os.getenv('OPENAI_IMG_QUALITY')
+FFMPEG_EXE = os.getenv('FFMPEG_EXE')
 
 if DISCORD_ALL_USE.upper() == 'TRUE':
     DISCORD_ALL_USE = True
@@ -42,13 +43,6 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 ## OpenAI config/variables
 client = OpenAI()
 OPENAI_TTS_VOICES = ["alloy","echo","fable","onyx","nova","shimmer"]
-
-
-## variables
-if True:
-        ffmpeg_exe = 'ffmpeg/bin/ffmpeg.exe'
-else:
-        ffmpeg_exe = 'ffmpeg'
 
 
 ## Function
@@ -82,7 +76,7 @@ async def openai_gentts(chatmsg, question, OPENAI_TTS_VOICE=None):
                 response.stream_to_file(tFile.name)
                 channel = chatmsg.message.author.voice.channel
                 vc = await channel.connect()
-                vc.play(discord.FFmpegPCMAudio(tFile.name, executable=ffmpeg_exe))
+                vc.play(discord.FFmpegPCMAudio(tFile.name, executable=FFMPEG_EXE))
                 while not vc.is_playing():
                         await asyncio.sleep(0.5)
                 while vc.is_playing():
