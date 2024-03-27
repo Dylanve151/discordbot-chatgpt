@@ -2,6 +2,8 @@ import os
 import threading
 import random
 import asyncio
+import requests
+import tempfile
 
 import discord
 from openai import OpenAI
@@ -69,6 +71,7 @@ async def openai_gentts(chatmsg, question, OPENAI_TTS_VOICE=None):
                 if OPENAI_TTS_VOICE == None:
                         OPENAI_TTS_VOICE = random.choice(OPENAI_TTS_VOICES)
                 print("TTS Q:\""+str(question)+"\"")
+                tFile = tempfile.NamedTemporaryFile(suffix='.mp3')
                 response = client.audio.speech.create(
                         model=OPENAI_TTS_MODEL,
                         voice=OPENAI_TTS_VOICE,
@@ -76,20 +79,22 @@ async def openai_gentts(chatmsg, question, OPENAI_TTS_VOICE=None):
                         speed=OPENAI_TTS_SPEED,
                         input=question
                 )
-                response.stream_to_file(".temp/tts.mp3")
+                response.stream_to_file(tFile.name)
                 channel = chatmsg.message.author.voice.channel
                 vc = await channel.connect()
-                vc.play(discord.FFmpegPCMAudio(".temp/tts.mp3", executable=ffmpeg_exe))
+                vc.play(discord.FFmpegPCMAudio(tFile.name, executable=ffmpeg_exe))
                 while not vc.is_playing():
                         await asyncio.sleep(0.5)
                 while vc.is_playing():
                         await asyncio.sleep(0.5)
                 await vc.disconnect()
+                tFile.close()
                 print("TTS A:\""+"done"+"\"")
 
 
 async def openai_genimage(chatmsg, question):
         print("IMG Q:\""+str(question)+"\"")
+        tFile = tempfile.NamedTemporaryFile(suffix='.png')
         response = client.images.generate(
                 model=OPENAI_IMG_MODEL,
                 size=OPENAI_IMG_SIZE,
@@ -97,7 +102,11 @@ async def openai_genimage(chatmsg, question):
                 n=1,
                 prompt=question
         )
-        await chatmsg.reply(response.data[0].url)
+        r = requests.get(response.data[0].url, allow_redirects=True)
+        tFile.write(r.content)
+        tFile.flush()
+        await chatmsg.reply(file=discord.File(tFile.name))
+        tFile.close()
         print("IMG A:\""+str(response.data[0].url)+"\"")
 
 
